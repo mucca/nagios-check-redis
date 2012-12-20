@@ -14,3 +14,7 @@ services.cfg:
       ...
     }
 
+
+missrate monitoring:
+
+    check_redis missrate -H localhost -w 80 -c 50

@@ -4,7 +4,7 @@ require 'optparse'
 require 'rubygems'
 require 'redis'
 
-options = { :conn => { :host => "localhost", :port => 6379, :password => nil, :timeout => 5 }, 
+options = { :conn => { :host => "localhost", :port => 6379, :password => nil, :timeout => 5 },
             :nagios => {}
           }
 
@@ -57,8 +57,14 @@ class CheckRedis
 
   def gather_stats(options, cmd)
     stats = @redis.info
-    if stats[cmd]
-      value = stats[cmd].to_i
+    if cmd == "missrate" or stats[cmd]
+      if cmd == "missrate"
+        hits = stats['keyspace_hits'].to_f
+        miss = stats['keyspace_misses'].to_f
+        value = (miss / (miss + hits) * 100).to_i
+      else
+        value = stats[cmd].to_i
+      end
 
       if value >= options[:crit]
         puts "CRIT: #{cmd} exceeds critical level of #{options[:crit]} : #{value} | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
@@ -69,12 +75,12 @@ class CheckRedis
       else
         puts "OK: #{cmd} is ok | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
         exit 0
-      end 
+      end
 
       # TODO: redis.info has some human_values
 
     else
-      puts "UNKNOWN: No such key - #{cmd}"
+      puts "UNKNOWN: No such key - '#{cmd}'"
       exit 3
     end
 
