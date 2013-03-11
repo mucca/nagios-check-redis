@@ -67,10 +67,10 @@ class CheckRedis
       end
 
       if value >= options[:crit]
-        puts "CRIT: #{cmd} exceeds critical level of #{options[:crit]} : #{value} | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
+        puts "CRIT: #{cmd} exceeds critical level of #{options[:crit]}% : current missrate is #{value}% | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
         exit 2
       elsif value >= options[:warn]
-        puts "WARN: #{cmd} exceeds warning level of #{options[:warn]} : #{value} | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
+        puts "WARN: #{cmd} exceeds warning level of #{options[:warn]}% : current missrate is #{value}% | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
         exit 1
       else
         puts "OK: #{cmd} is ok | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
