@@ -62,6 +62,8 @@ class CheckRedis
         hits = stats['keyspace_hits'].to_f
         miss = stats['keyspace_misses'].to_f
         value = (miss / (miss + hits) * 100).to_i
+      elsif cmd == "used_memory"
+        value = stats['used_memory'].to_f / 1024
       else
         value = stats[cmd].to_i
       end
