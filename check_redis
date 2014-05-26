@@ -74,6 +74,18 @@ class CheckRedis
           puts "OK: #{cmd} is ok | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
           exit 0
         end
+      elsif cmd == "evicted_keys"
+        value = stats['evicted_keys'].to_f
+        if value >= options[:crit]
+          puts "CRIT: #{cmd} exceeds critical level of #{options[:crit]} evicted keys | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
+          exit 2
+        elsif value >= options[:warn]
+          puts "WARN: #{cmd} exceeds critical level of #{options[:warn]} evicted keys | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
+          exit 1
+        else
+          puts "OK: #{cmd} is ok | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
+          exit 0
+        end
       else
         value = stats[cmd].to_i
       end
