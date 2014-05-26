@@ -57,6 +57,19 @@ class CheckRedis
 
   def gather_stats(options, cmd)
     stats = @redis.info
+    if cmd == "expirable_keys"
+      for k in stats.keys do
+        keys = stats[k]['keys'].to_f
+        expires = stats[k]['expires'].to_f
+
+        if keys != expires
+          puts "CRIT: #{cmd} there are non expirable keys |;;;;"
+          exit 2
+        end
+      end
+      puts "OK: #{cmd} is ok | ;;;;"
+      exit 0
+    end
     if cmd == "missrate" or stats[cmd]
       if cmd == "missrate"
         hits = stats['keyspace_hits'].to_f
@@ -86,18 +99,6 @@ class CheckRedis
           puts "OK: #{cmd} is ok | #{cmd}=#{value};#{options[:warn]};#{options[:crit]};;"
           exit 0
         end
-      elsif cmd == "expirable_keys"
-        for k in stats.keys do
-          keys = stats[k]['keys'].to_f
-          expires = stats[k]['expires'].to_f
-
-          if keys != expires
-            puts "CRIT: #{cmd} there are non expirable keys |;;;;"
-            exit 2
-          end
-        end
-        puts "OK: #{cmd} is ok | ;;;;"
-        exit 0
       else
         value = stats[cmd].to_i
       end
